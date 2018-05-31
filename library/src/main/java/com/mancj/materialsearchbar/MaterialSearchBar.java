@@ -55,6 +55,7 @@ public class MaterialSearchBar extends RelativeLayout implements View.OnClickLis
     private CardView searchBarCardView;
     private LinearLayout inputContainer;
     private ImageView navIcon;
+    private ImageView menuIcon;
     private ImageView searchIcon;
     private ImageView arrowIcon;
     private ImageView clearIcon;
@@ -201,6 +202,7 @@ public class MaterialSearchBar extends RelativeLayout implements View.OnClickLis
         searchBarCardView = (CardView) findViewById(R.id.mt_container);
         suggestionDivider = (View) findViewById(R.id.mt_divider);
         menuDivider = (View) findViewById(R.id.mt_menu_divider);
+        menuIcon = (ImageView) findViewById(R.id.mt_menu);
         clearIcon = (ImageView) findViewById(R.id.mt_clear);
         searchIcon = (ImageView) findViewById(R.id.mt_search);
         arrowIcon = (ImageView) findViewById(R.id.mt_arrow);
@@ -243,7 +245,22 @@ public class MaterialSearchBar extends RelativeLayout implements View.OnClickLis
 
     private void inflateMenuRequest(int menuResource, int iconResId
     ) {
-
+        this.menuResource = menuResource;
+        if (this.menuResource > 0) {
+            ImageView menuIcon = (ImageView) findViewById(R.id.mt_menu);
+            if (iconResId != -1) {
+                menuIconRes = iconResId;
+                menuIcon.setImageResource(menuIconRes);
+            }
+            RelativeLayout.LayoutParams params = (LayoutParams) searchIcon.getLayoutParams();
+            params.rightMargin = (int) (48 * destiny);
+            searchIcon.setLayoutParams(params);
+            menuIcon.setVisibility(VISIBLE);
+            menuIcon.setOnClickListener(this);
+            popupMenu = new PopupMenu(getContext(), menuIcon);
+            popupMenu.inflate(menuResource);
+            popupMenu.setGravity(Gravity.RIGHT);
+        }
     }
 
     /**
@@ -320,6 +337,11 @@ public class MaterialSearchBar extends RelativeLayout implements View.OnClickLis
         this.navIcon.setImageResource(navIconResId);
         setNavButtonEnabled(navButtonEnabled);
 
+        //Menu
+        if (popupMenu == null) {
+            findViewById(R.id.mt_menu).setVisibility(GONE);
+        }
+
         //Search
         setSpeechMode(speechMode);
 
@@ -347,7 +369,11 @@ public class MaterialSearchBar extends RelativeLayout implements View.OnClickLis
     }
 
     private void setupMenuIconTint() {
-
+        if (menuIconTintEnabled) {
+            menuIcon.setColorFilter(menuIconTint, PorterDuff.Mode.SRC_IN);
+        } else {
+            menuIcon.clearColorFilter();
+        }
     }
 
     private void setupSearchIconTint() {
@@ -392,6 +418,7 @@ public class MaterialSearchBar extends RelativeLayout implements View.OnClickLis
             }
             navIcon.setBackgroundResource(rippleStyle.resourceId);
             searchIcon.setBackgroundResource(rippleStyle.resourceId);
+            menuIcon.setBackgroundResource(rippleStyle.resourceId);
             arrowIcon.setBackgroundResource(rippleStyle.resourceId);
             clearIcon.setBackgroundResource(rippleStyle.resourceId);
         }else{
@@ -511,6 +538,7 @@ public class MaterialSearchBar extends RelativeLayout implements View.OnClickLis
      */
     public void setMenuIcon(int menuIconResId) {
         this.menuIconRes = menuIconResId;
+        this.menuIcon.setImageResource(this.menuIconRes);
     }
 
     /**
